@@ -1,0 +1,28 @@
+{
+  "name": "Cache",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Port": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "peers": {
+      "type": "hasMany",
+      "model": "Peer",
+      "foreignKey": "camId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

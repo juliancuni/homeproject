@@ -1,0 +1,78 @@
+{
+  "name": "MultiCS",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Bin_File": {
+      "type": "string",
+      "required": true
+    },
+    "Bin_Path": {
+      "type": "string",
+      "required": true,
+      "default": "./files/mcs_bin/"
+    },
+    "HTTP_Port": {
+      "type": "string",
+      "required": true
+    },
+    "HTTP_User": {
+      "type": "string"
+    },
+    "HTTP_Pass": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "server": {
+      "type": "belongsTo",
+      "model": "Server",
+      "foreignKey": ""
+    },
+    "domains": {
+      "type": "hasMany",
+      "model": "Domain",
+      "foreignKey": "multiCsId"
+    },
+    "clients": {
+      "type": "hasMany",
+      "model": "Client",
+      "foreignKey": "multiCsId"
+    },
+    "cache": {
+      "type": "hasMany",
+      "model": "Cache",
+      "foreignKey": "multiCsId"
+    },
+    "cCcams": {
+      "type": "hasMany",
+      "model": "CCcam",
+      "foreignKey": "multiCsId"
+    },
+    "mgcamds": {
+      "type": "hasMany",
+      "model": "MgCamd",
+      "foreignKey": "multiCsId"
+    },
+    "profileDefault": {
+      "type": "hasMany",
+      "model": "ProfileDefault",
+      "foreignKey": "multiCsId"
+    },
+    "profiles": {
+      "type": "hasMany",
+      "model": "Profile",
+      "foreignKey": "multiCsId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

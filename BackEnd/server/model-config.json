@@ -17,22 +17,78 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "mongoDS"
   },
   "AccessToken": {
-    "dataSource": "db",
+    "dataSource": "mongoDS",
     "public": false
   },
   "ACL": {
-    "dataSource": "db",
+    "dataSource": "mongoDS",
     "public": false
   },
   "RoleMapping": {
-    "dataSource": "db",
+    "dataSource": "mongoDS",
     "public": false
   },
   "Role": {
-    "dataSource": "db",
+    "dataSource": "mongoDS",
     "public": false
+  },
+  "Server": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "MultiCS": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "Domain": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "container": {
+    "dataSource": "FileStore",
+    "public": true
+  },
+  "Client": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "Cache": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "CCcam": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "MgCamd": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "ProfileDefault": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "Profile": {
+    "dataSource": "mongoDS",
+    "public": true
+  },
+  "mapCccamClient": {
+    "dataSource": "mongoDS",
+    "public": false
+  },
+  "mapMgcamdClient": {
+    "dataSource": "mongoDS",
+    "public": false
+  },
+  "mapNewcamdClient": {
+    "dataSource": "mongoDS",
+    "public": false
+  },
+  "Peer": {
+    "dataSource": "mongoDS",
+    "public": true
   }
 }

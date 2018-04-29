@@ -1,0 +1,59 @@
+{
+  "name": "Client",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "User": {
+      "type": "string",
+      "required": true
+    },
+    "Pass": {
+      "type": "string",
+      "required": true
+    },
+    "Note": {
+      "type": "string"
+    },
+    "Enabled": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "server": {
+      "type": "belongsTo",
+      "model": "MultiCS",
+      "foreignKey": ""
+    },
+    "cCcams": {
+      "type": "hasMany",
+      "model": "CCcam",
+      "foreignKey": "clientId",
+      "through": "mapCccamClient"
+    },
+    "mgCamds": {
+      "type": "hasMany",
+      "model": "MgCamd",
+      "foreignKey": "clientId",
+      "through": "mapMgcamdClient"
+    },
+    "profiles": {
+      "type": "hasMany",
+      "model": "Profile",
+      "foreignKey": "clientId",
+      "through": "mapNewcamdClient"
+    },
+    "peers": {
+      "type": "hasMany",
+      "model": "Peer",
+      "foreignKey": "clientId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

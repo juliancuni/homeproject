@@ -2,5 +2,21 @@
   "db": {
     "name": "db",
     "connector": "memory"
+  },
+  "mongoDS": {
+    "host": "127.0.0.1",
+    "port": 27017,
+    "url": "",
+    "database": "homeProject",
+    "password": "",
+    "name": "mongoDS",
+    "user": "",
+    "connector": "mongodb"
+  },
+  "FileStore": {
+    "name": "FileStore",
+    "connector": "loopback-component-storage",
+    "provider": "filesystem",
+    "root": "./files"
   }
 }

@@ -1,0 +1,36 @@
+{
+  "name": "Domain",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Domain_Name": {
+      "type": "string"
+    },
+    "Registrar": {
+      "type": "string"
+    },
+    "User": {
+      "type": "string"
+    },
+    "Pass": {
+      "type": "string"
+    },
+    "Default": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "validations": [],
+  "relations": {
+    "multiCS": {
+      "type": "belongsTo",
+      "model": "MultiCS",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

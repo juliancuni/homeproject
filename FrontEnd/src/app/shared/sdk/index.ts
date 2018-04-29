@@ -49,6 +49,17 @@ import { SocketDriver } from './sockets/socket.driver';
 import { SocketConnection } from './sockets/socket.connections';
 import { RealTime } from './services/core/real.time';
 import { UserApi } from './services/custom/User';
+import { ServerApi } from './services/custom/Server';
+import { MultiCSApi } from './services/custom/MultiCS';
+import { DomainApi } from './services/custom/Domain';
+import { ContainerApi } from './services/custom/Container';
+import { ClientApi } from './services/custom/Client';
+import { CacheApi } from './services/custom/Cache';
+import { CCcamApi } from './services/custom/CCcam';
+import { MgCamdApi } from './services/custom/MgCamd';
+import { ProfileDefaultApi } from './services/custom/ProfileDefault';
+import { ProfileApi } from './services/custom/Profile';
+import { PeerApi } from './services/custom/Peer';
 /**
 * @module SDKBrowserModule
 * @description
@@ -80,6 +91,17 @@ export class SDKBrowserModule {
         SDKModels,
         RealTime,
         UserApi,
+        ServerApi,
+        MultiCSApi,
+        DomainApi,
+        ContainerApi,
+        ClientApi,
+        CacheApi,
+        CCcamApi,
+        MgCamdApi,
+        ProfileDefaultApi,
+        ProfileApi,
+        PeerApi,
         internalStorageProvider,
         { provide: SDKStorage, useClass: StorageBrowser },
         { provide: SocketDriver, useClass: SocketBrowser }

@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title  } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { SharedModule } from './shared/shared.module';
@@ -19,7 +19,7 @@ import { AppComponent } from './app.component';
     SharedModule.forRoot(),
     SDKBrowserModule.forRoot(),
   ],
-  providers: [],
+  providers: [Title],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

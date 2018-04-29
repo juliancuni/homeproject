@@ -18,6 +18,8 @@ export const routes = [
         children: [
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', loadChildren: './home/home.module#HomeModule'},
+            { path: 'mcs', loadChildren: './mcs/mcs.module#McsModule'},
+            
             // { path: 'ndermarrja', loadChildren: './ndermarrja/ndermarrja.module#NdermarrjaModule', canActivate: [AuthGuard]},
             // { path: 'perdorues', loadChildren: './perdorues/perdorues.module#PerdoruesModule', canActivate: [AuthGuard]}
         ]

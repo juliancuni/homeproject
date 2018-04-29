@@ -1,0 +1,41 @@
+{
+  "name": "Server",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Name": {
+      "type": "string"
+    },
+    "Public_IP": {
+      "type": "string",
+      "required": true
+    },
+    "Private_IP": {
+      "type": "string",
+      "required": true
+    },
+    "SSH_User": {
+      "type": "string",
+      "required": true
+    },
+    "SSH_Pass": {
+      "type": "string"
+    },
+    "SSH_Key": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "multiCs": {
+      "type": "hasMany",
+      "model": "MultiCS",
+      "foreignKey": "serverId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

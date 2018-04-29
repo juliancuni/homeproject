@@ -1,0 +1,508 @@
+<!--Servers Menu-->
+<div class="row">
+    <div class="col-12">
+        <span *ngFor="let srvr of servers">
+            <button class="btn btn-outline-primary btn-sm" [ngClass]="{'active': server?.id == srvr?.id}" (click)="changeServer(srvr)">{{srvr.Name}}</button>
+        </span>
+        <span>
+            <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleDialogs('serverFormShow')">NEW Server</button>
+        </span>
+    </div>
+</div>
+<!--End Servers Menu-->
+<!--MultiCS Menu-->
+<div class="row" *ngIf="servers?.length > 0">
+    <div class="col-12">
+        <span *ngFor="let mcs of server?.multiCs">
+            <button class="btn btn-outline-primary btn-sm" [ngClass]="{'active': mcs?.id == multiCS?.id}" (click)="changeMCS(mcs)">{{mcs.Name}} - V.{{mcs.Bin_File}}</button>
+        </span>
+        <span>
+            <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleDialogs('mcsFormShow')">NEW MCS</button>
+        </span>
+    </div>
+</div>
+<!--End MultiCS Menu-->
+<!--NewServer Form-->
+<div class="position-absolute" *ngIf="serverFormShow">
+    <div class="col-12 card text-white bg-secondary mb-3" style="z-index: 10000;">
+        <div class="card-header">New Server
+            <button type="button" class="close float-right" (click)="serverFormShow = false">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form class="form-group" [formGroup]="srvrForm" (ngSubmit)="regGewServer($event, srvrForm.value)">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="Name" placeholder="Name">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="Public_IP" placeholder="Public_IP">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="Private_IP" placeholder="Private_IP">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="SSH_User" placeholder="SSH_User">
+            <input type="password" class="form-control form-control-sm mb-2" formControlName="SSH_Pass" placeholder="SSH_Pass">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="SSH_Key" placeholder="SSH_Key">
+            <button type="submit" class="btn btn-success btn-sm mb-2" [disabled]="!srvrForm.valid">Go</button>
+            <button type="submit" class="btn btn-default btn-sm mb-2" (click)="serverFormShow = false">Cancel</button>
+        </form>
+    </div>
+</div>
+<!--End NewServer Form-->
+<!--NewMultiCS Form-->
+<div class="position-absolute" *ngIf="mcsFormShow">
+    <div class="col-12 card text-white bg-secondary mb-3" style="z-index: 10000;">
+        <div class="card-header">New MultiCS
+            <button type="button" class="close float-right" (click)="mcsFormShow = false">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form class="form-group" [formGroup]="mcsForm" (ngSubmit)="regNewMCS($event, mcsForm.value)">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="Name" placeholder="Some Name">
+            <select class="form-control form-control-sm mb-2" [(ngModel)]="mcsBinFile" formControlName="Bin_File">
+                <option label="Choose MCS_Bin" disabled [selected]="true"></option>
+                <option *ngFor="let mcsBin of mcsBinFiles" [value]="mcsBin.name">{{mcsBin.name}}</option>
+            </select>
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="HTTP_Port" placeholder="HTTP_Port">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="HTTP_User" placeholder="HTTP_User">
+            <input type="text" class="form-control form-control-sm mb-2" formControlName="HTTP_Pass" placeholder="HTTP_Pass">
+            <button type="submit" class="btn btn-success btn-sm mb-2" [disabled]="!mcsForm.valid">Go</button>
+            <button type="submit" class="btn btn-default btn-sm mb-2" (click)="mcsFormShow = false">Cancel</button>
+        </form>
+    </div>
+</div>
+<!--End NewMultiCS Form-->
+<!--Server Properties-->
+<div class="row" *ngIf="server?.multiCs?.length == 0">
+    <div class="col">
+        <hr>
+        <div class="alert alert-secondary" role="alert">
+            <p class="alert-heading display-4">NO_DATA For This Server</p>
+            <p>Click NEW MCS above to start creating MultiCS on this Server</p>
+
+        </div>
+        <hr>
+        <button class="btn btn-default btn-sm mb-2" (click)="deleteServerShow = true">Delete This Server</button>
+        <div class="form-row align-items-center" *ngIf="deleteServerShow">
+            <div class="col-auto">
+                <label class="sr-only" for="inlineFormInput">Name</label>
+                <input type="text" class="form-control form-control-sm mb-1" id="inlineFormInput" placeholder="Server Name" [(ngModel)]="serverNameToDel">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-danger btn-sm mb-1" (click)="deleteServer(serverNameToDel, server)">Delete</button>
+                <button type="submit" class="btn btn-default btn-sm mb-1" (click)="deleteServerShow = false">X</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" *ngIf="server?.multiCs?.length > 0">
+    <div class="col">
+        <ngb-tabset>
+            <ngb-tab *ngIf="cache?.length > 0 || cccams?.length > 0 || mgcamds?.length > 0 || profiles?.length > 0">
+                <ng-template ngbTabTitle>
+                    <small>Exchange</small>
+                    <!-- <span class="badge badge-warning">1</span> -->
+                </ng-template>
+                <ng-template ngbTabContent>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleDialogs('clientFormShow')">New</button>
+                                </th>
+                                <th scope="col">client</th>
+                                <th scope="col">Forum</th>
+                                <th scope="col">CCcam</th>
+                                <th scope="col">MgCamd</th>
+                                <th scope="col">NewCamd</th>
+                                <th scope="col">Cache</th>
+                                <th scope="col">Disable</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <!--NewKlient Form-->
+                        <div class="position-absolute" *ngIf="clientFormShow">
+                            <div class="col-12 card text-white bg-secondary mb-3" style="z-index: 10000;">
+                                <div class="card-header">New Peer
+                                    <button type="button" class="close float-right" (click)="clientFormShow = false">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form class="form-group" [formGroup]="clientForm" (ngSubmit)="regNewClient($event, clientForm.value)">
+                                    <input type="text" class="form-control form-control-sm mb-2" formControlName="User" placeholder="Username">
+                                    <input type="text" class="form-control form-control-sm mb-2" formControlName="Pass" placeholder="Password">
+                                    <input type="text" class="form-control form-control-sm mb-2" formControlName="Note" placeholder="Notes">
+                                    <button type="submit" class="btn btn-success btn-sm mb-2" [disabled]="!clientForm.valid">Go</button>
+                                    <button type="submit" class="btn btn-default btn-sm mb-2" (click)="clientFormShow = false">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!--End NewKlient Form-->
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </ng-template>
+            </ngb-tab>
+            <ngb-tab>
+                <ng-template ngbTabTitle>
+                    <small>Settings</small>
+                </ng-template>
+                <ng-template ngbTabContent>
+                    <p></p>
+                    <div class="col mb-1">
+                        <button class="btn btn-default btn-sm" (click)="toggleDialogs('camFormShow', 'Cache')" *ngIf="cache?.length < 1">Add Cache</button>
+                        <button class="btn btn-default btn-sm" (click)="toggleDialogs('camFormShow', 'CCcam')">New CCcam</button>
+                        <button class="btn btn-default btn-sm" (click)="toggleDialogs('camFormShow', 'MgCamd')">New MgCamd</button>
+                        <button class="btn btn-default btn-sm" (click)="toggleDialogs('camFormShow', 'ProfileDefault')" *ngIf="profileDefault?.length < 1">Add Profile_Default</button>
+                        <button class="btn btn-default btn-sm" (click)="toggleDialogs('camFormShow', 'Profile')">New Profile</button>
+                        <button class="btn btn-default btn-sm" (click)="toggleDialogs('domainFormShow', 'Domains')">Domains</button>
+                    </div>
+                    <!--New Cam Form-->
+                    <div class="position-absolute" *ngIf="camFormShow">
+                        <div class="col-12 card text-white bg-secondary mb-3" style="z-index: 10000;">
+                            <div class="card-header">New {{camFormName}}
+                                <button type="button" class="close float-right" (click)="camFormShow = false">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form class="form-group" [formGroup]="camForm" novalidate (ngSubmit)="regNewCam($event, camForm.value, camFormName)">
+                                <input type="text" class="form-control form-control-sm mb-2" formControlName="Name" placeholder="Some Name">
+                                <input type="text" class="form-control form-control-sm mb-2" formControlName="Port" placeholder="Port" *ngIf="camFormName != 'ProfileDefault'">
+                                <input type="hidden" formControlName="Port" [value]="0" *ngIf="camFormName == 'ProfileDefault'">
+                                <div formArrayName="params">
+                                    <div *ngFor="let address of camForm.controls.params.controls; let i=index" class="form-inline">
+                                        <div [formGroupName]="i">
+                                            <input type="text" class="form-control form-control-sm mb-2" formControlName="param" placeholder="{{camFormName}} Param{{i + 1}}">
+                                        </div>
+                                        <a class="btn btn-sm ml-2 float-right" *ngIf="camForm.controls.params.controls.length > 1" (click)="removeParam(i)">X</a>
+                                    </div>
+                                </div>
+                                <hr>
+                                <a class="btn btn-outline-info btn-sm mb-1" (click)="addParam()">Add New Param</a>
+                                <button type="submit" class="btn btn-success btn-sm mb-1" [disabled]="!camForm.valid">Go</button>
+                                <button type="submit" class="btn btn-default btn-sm mb-1" (click)="camFormShow = false">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!--End New Cam Form-->
+                    <!--New Domains Form-->
+                    <div class="position-absolute" *ngIf="domainFormShow">
+                        <div class="col card text-white bg-secondary mb-3" style="z-index: 10000; width: 500px;">
+                            <div class="card-header">Domains
+                                <button type="button" class="close float-right" (click)="domainFormShow = false">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form class="form-group" [formGroup]="domainForm" novalidate (ngSubmit)="regNewDomain($event, domainForm.value)">
+                                <input type="text" class="form-control form-control-sm mb-2" formControlName="Domain_Name" placeholder="Domain_Name">
+                                <input type="text" class="form-control form-control-sm mb-2" formControlName="Registrar" placeholder="Registrar">
+                                <input type="text" class="form-control form-control-sm mb-2" formControlName="User" placeholder="User">
+                                <input type="text" class="form-control form-control-sm mb-2" formControlName="Pass" placeholder="Pass">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="defaultDomain" formControlName="Default">
+                                    <label class="form-check-label" for="defaultDomain">Default for sharing?</label>
+                                </div>
+                                <hr>
+                                <button type="submit" class="btn btn-success btn-sm mb-1" [disabled]="!domainForm.valid">Go</button>
+                                <button type="submit" class="btn btn-default btn-sm mb-1" (click)="domainForm = false">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!--End New Domains Form-->
+                    <!--Settings-->
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <span class="card-title">
+                                        <b>{{server?.Name}}</b> Properties</span>
+                                    <table class="table table-sm small-txt">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Public_IP
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">
+                                                        {{server?.Public_IP}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Private_IP
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">
+                                                        {{server?.Private_IP}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    SSH_User
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">
+                                                        {{server?.SSH_User}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    SSH_Pass
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">
+                                                        {{server?.SSH_Pass || 'N/A'}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    SSH_Key
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">
+                                                        {{server?.SSH_Key || 'N/A'}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <button class="btn btn-outline-primary btn-sm">Edit {{server?.Name}}</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <span class="card-title">
+                                        <b>{{multiCS?.Name}}</b> Multics</span>
+                                    <table class="table table-sm small-txt">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Binary Version
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">{{multiCS?.Bin_File}}</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    HTTP_Port
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">{{multiCS?.HTTP_Port}}</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    HTTP_User
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">{{multiCS?.HTTP_User || 'N/A'}}</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    HTTP_Pass
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-bold">{{multiCS?.HTTP_Pass || 'N/A'}}</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <button class="btn btn-outline-primary btn-sm">Edit {{multiCS?.Name}}</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <!-- <span class="card-title">
+                                        <b>{{multiCS?.Name}}</b> Cams & Protocols</span> -->
+                                    <table class="table table-sm small-txt">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Cache
+                                                </th>
+                                                <th>
+                                                    Port
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let cachee of cache">
+                                                <td>
+                                                    {{cachee?.Name}}
+                                                </td>
+                                                <td>
+                                                    {{cachee?.Port}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-sm small-txt">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    CCcam
+                                                </th>
+                                                <th>
+                                                    Port
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let cccam of cccams">
+                                                <td>
+                                                    {{cccam?.Name}}
+                                                </td>
+                                                <td>
+                                                    {{cccam?.Port}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-sm small-txt">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        MgCamd
+                                                    </th>
+                                                    <th>
+                                                        Port
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let mgcamd of mgcamds">
+                                                    <td>
+                                                        {{mgcamd?.Name}}
+                                                    </td>
+                                                    <td>
+                                                        {{mgcamd?.Port}}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="table table-sm small-txt">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            Profiles
+                                                        </th>
+                                                        <th>
+                                                            Port
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let profile of profiles">
+                                                        <td>
+                                                            {{profile?.Name}}
+                                                        </td>
+                                                        <td>
+                                                            {{profile?.Port}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table class="table table-sm small-txt">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Profile Default
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let profileDef of profileDefault">
+                                                            <td>
+                                                                {{profileDef?.Name}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                    <table class="table table-sm small-txt">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Domains
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let domain of domains">
+                                                <td>
+                                                    <span [ngClass]="{'text-success': domain.Default}">{{domain.Domain_Name}}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Settings-->
+                    <hr>
+                    <!--Danger Zone Alert-->
+                    <div class="alert alert-danger" role="alert">
+                        <p class="alert-heading display-4">Danger Zone!</p>
+                        <hr>
+                        <p class="mb-0">In order to delete this server/multiCS click on one of the buttons below, then type in the server/multics
+                            name.
+                        </p>
+                        <p class="mb-0">
+                            <b>Warning!</b> Deleting this server/multiCS means you will delete all items related to it.</p>
+                        <p class="mb-0">
+                            <b>Warning!</b> After confirming deletion, you won't be able to undo changes. So, please use it
+                            carefully.
+                        </p>
+                    </div>
+                    <br>
+                    <button class="btn btn-default btn-sm mb-2" (click)="deleteMcsShow = true">Delete This Multics</button>
+                    <button class="btn btn-default btn-sm mb-2" (click)="deleteServerShow = true">Delete This Server</button>
+                    <div class="form-row align-items-center" *ngIf="deleteMcsShow">
+                        <div class="col-auto">
+                            <label class="sr-only" for="inlineFormInput">Name</label>
+                            <input type="text" class="form-control form-control-sm mb-1" id="inlineFormInput" placeholder="Server Name" [(ngModel)]="mcsNameToDel">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-danger btn-sm mb-1" (click)="deleteMCS(mcsNameToDel, server.multiCs)">Delete</button>
+                            <button type="submit" class="btn btn-default btn-sm mb-1" (click)="deleteMcsShow = false">X</button>
+                        </div>
+                    </div>
+                    <div class="form-row align-items-center" *ngIf="deleteServerShow">
+                        <div class="col-auto">
+                            <label class="sr-only" for="inlineFormInput">Name</label>
+                            <input type="text" class="form-control form-control-sm mb-1" id="inlineFormInput" placeholder="MultiCS Name" [(ngModel)]="serverNameToDel">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-danger btn-sm mb-1" (click)="deleteServer(serverNameToDel, server)">Delete</button>
+                            <button type="submit" class="btn btn-default btn-sm mb-1" (click)="deleteServerShow = false">X</button>
+                        </div>
+                    </div>
+                    <!--Danger Zone Alert-->
+                </ng-template>
+            </ngb-tab>
+        </ngb-tabset>
+    </div>
+</div>
+<!--End Server Properties-->
